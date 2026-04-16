@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint and syntax
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Python syntax check
+        run: python3 -m py_compile codexbar-tray.py
+
+      - name: Install ruff
+        run: pip install --no-cache-dir "ruff==0.6.9"
+
+      - name: Ruff (lint)
+        run: ruff check codexbar-tray.py
+
+      - name: Ruff (format check)
+        run: ruff format --check codexbar-tray.py
+
+      - name: ShellCheck install.sh
+        uses: ludeeus/action-shellcheck@2.0.0
+        with:
+          scandir: "."
+          check_together: "yes"

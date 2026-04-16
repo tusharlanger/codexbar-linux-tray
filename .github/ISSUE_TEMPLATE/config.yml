@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Upstream codexbar (data source)
+    url: https://github.com/steipete/CodexBar/issues
+    about: Provider auth, missing CLI fields, and Linux CLI bugs belong upstream.

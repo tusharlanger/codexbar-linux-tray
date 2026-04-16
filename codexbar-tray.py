@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """GNOME tray for codexbar — Claude session/weekly/sonnet/extras + cost."""
+
 import json
 import shutil
 import subprocess
@@ -7,6 +8,7 @@ import threading
 from datetime import datetime, timezone
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 gi.require_version("AyatanaAppIndicator3", "0.1")
 from gi.repository import GLib, Gtk, AyatanaAppIndicator3 as AppIndicator  # noqa: E402
@@ -24,7 +26,9 @@ BAR_WIDTH = 20  # unicode bar segments
 
 def run_json(args):
     try:
-        out = subprocess.run([CODEXBAR, *args], capture_output=True, text=True, timeout=15)
+        out = subprocess.run(
+            [CODEXBAR, *args], capture_output=True, text=True, timeout=15
+        )
         if out.returncode != 0:
             return {"_error": out.stderr.strip() or f"exit {out.returncode}"}
         data = json.loads(out.stdout)
@@ -100,7 +104,7 @@ def pace(used_pct, window_minutes, resets_at_iso):
     delta = used_pct - elapsed_pct
     projected = used_pct / max(elapsed_pct, 0.01) * 100
     if delta < -5:
-        tail = "Lasts to reset" if projected <= 100 else f"Runs out near reset"
+        tail = "Lasts to reset" if projected <= 100 else "Runs out near reset"
         return (f"Behind ({delta:+.0f}%) · {tail}", projected)
     if delta > 5:
         if projected <= 100:
@@ -146,7 +150,8 @@ def humanize_until(iso_ts):
 class CodexBarTray:
     def __init__(self):
         self.indicator = AppIndicator.Indicator.new(
-            "codexbar-tray", ICON_NORMAL,
+            "codexbar-tray",
+            ICON_NORMAL,
             AppIndicator.IndicatorCategory.APPLICATION_STATUS,
         )
         self.indicator.set_label("…", "$000.00")
@@ -166,7 +171,9 @@ class CodexBarTray:
 
     def _worker(self):
         results = {
-            "claude_usage": run_json(["usage", "--provider", "claude", "--source", "oauth", "--json"]),
+            "claude_usage": run_json(
+                ["usage", "--provider", "claude", "--source", "oauth", "--json"]
+            ),
             "claude_cost": run_json(["cost", "--provider", "claude", "--json"]),
             "codex_cost": run_json(["cost", "--provider", "codex", "--json"]),
         }
@@ -192,9 +199,11 @@ class CodexBarTray:
     def _meter(self, name, glyph, pct, reset_human, pace_label):
         col = color_for(pct)
         bar_str = bar(pct)
-        line1 = (f"<b>{esc(glyph)} {esc(name)}</b>   "
-                 f"<tt>{bar_str}</tt>  "
-                 f"<span foreground='{col}'><b>{pct}%</b></span>")
+        line1 = (
+            f"<b>{esc(glyph)} {esc(name)}</b>   "
+            f"<tt>{bar_str}</tt>  "
+            f"<span foreground='{col}'><b>{pct}%</b></span>"
+        )
         self._add_markup(line1)
         if reset_human:
             sub = f"<span foreground='#9ca3af' size='small'>      ↻ {esc(reset_human)}  ·  {esc(pace_label)}</span>"
@@ -215,8 +224,7 @@ class CodexBarTray:
         login = u.get("loginMethod", "—")
 
         # icon by worst-case usage %
-        worst = max(primary.get("usedPercent") or 0,
-                    secondary.get("usedPercent") or 0)
+        worst = max(primary.get("usedPercent") or 0, secondary.get("usedPercent") or 0)
         if worst >= THRESHOLD_CRIT_PCT:
             self.indicator.set_icon_full(ICON_CRIT, "high")
         elif worst >= THRESHOLD_WARN_PCT:
@@ -227,28 +235,49 @@ class CodexBarTray:
         # top-bar label = session %
         sess_pct = primary.get("usedPercent")
         self.indicator.set_label(
-            f"S{sess_pct}%" if isinstance(sess_pct, int) else "—",
-            "S100%",
+            f"{sess_pct}%" if isinstance(sess_pct, int) else "—",
+            "100%",
         )
 
         plan = login.replace("Claude ", "") if isinstance(login, str) else "—"
-        self._add_markup(f"<b><big>Claude</big></b>  <span foreground='#9ca3af'>· {esc(plan)}</span>")
+        self._add_markup(
+            f"<b><big>Claude</big></b>  <span foreground='#9ca3af'>· {esc(plan)}</span>"
+        )
 
         if usage_err:
-            self._add_markup(f"<span foreground='#ef4444'>  usage error: {esc(usage_err[:60])}</span>")
+            self._add_markup(
+                f"<span foreground='#ef4444'>  usage error: {esc(usage_err[:60])}</span>"
+            )
         else:
             sp = primary.get("usedPercent") or 0
             sp_pace, _ = pace(sp, primary.get("windowMinutes"), primary.get("resetsAt"))
-            self._meter("Session", "⏱", sp, humanize_until(primary.get("resetsAt")) + " left", sp_pace)
+            self._meter(
+                "Session",
+                "⏱",
+                sp,
+                humanize_until(primary.get("resetsAt")) + " left",
+                sp_pace,
+            )
 
             wp = secondary.get("usedPercent") or 0
-            wp_pace, _ = pace(wp, secondary.get("windowMinutes"), secondary.get("resetsAt"))
-            self._meter("Weekly", "📅", wp, humanize_until(secondary.get("resetsAt")) + " left", wp_pace)
+            wp_pace, _ = pace(
+                wp, secondary.get("windowMinutes"), secondary.get("resetsAt")
+            )
+            self._meter(
+                "Weekly",
+                "📅",
+                wp,
+                humanize_until(secondary.get("resetsAt")) + " left",
+                wp_pace,
+            )
 
             tp = tertiary.get("usedPercent") or 0
             if tp > 0:
-                tp_pace, _ = pace(tp, tertiary.get("windowMinutes"),
-                                  tertiary.get("resetsAt") or secondary.get("resetsAt"))
+                tp_pace, _ = pace(
+                    tp,
+                    tertiary.get("windowMinutes"),
+                    tertiary.get("resetsAt") or secondary.get("resetsAt"),
+                )
                 self._meter("Sonnet", "✦", tp, None, tp_pace)
 
             if provider_cost:
@@ -272,7 +301,9 @@ class CodexBarTray:
         # ── Cost section
         cc = results["claude_cost"]
         cx = results["codex_cost"]
-        self._add_markup("<b><big>Cost</big></b>  <span foreground='#9ca3af'>· local logs</span>")
+        self._add_markup(
+            "<b><big>Cost</big></b>  <span foreground='#9ca3af'>· local logs</span>"
+        )
 
         def cost_row(label, d):
             if "_error" in d:
@@ -295,18 +326,28 @@ class CodexBarTray:
 
         self.menu.append(Gtk.SeparatorMenuItem())
         ts = datetime.now().strftime("%H:%M:%S")
-        self._add_markup(f"<span foreground='#9ca3af' size='small'>Updated {esc(ts)}</span>")
+        self._add_markup(
+            f"<span foreground='#9ca3af' size='small'>Updated {esc(ts)}</span>"
+        )
 
         ref = Gtk.MenuItem(label="Refresh now")
         ref.connect("activate", self.refresh)
         self.menu.append(ref)
 
         dash = Gtk.MenuItem(label="Usage Dashboard")
-        dash.connect("activate", lambda _: subprocess.Popen(["xdg-open", "https://claude.ai/settings/usage"]))
+        dash.connect(
+            "activate",
+            lambda _: subprocess.Popen(
+                ["xdg-open", "https://claude.ai/settings/usage"]
+            ),
+        )
         self.menu.append(dash)
 
         status = Gtk.MenuItem(label="Status Page")
-        status.connect("activate", lambda _: subprocess.Popen(["xdg-open", "https://status.anthropic.com"]))
+        status.connect(
+            "activate",
+            lambda _: subprocess.Popen(["xdg-open", "https://status.anthropic.com"]),
+        )
         self.menu.append(status)
 
         self.menu.append(Gtk.SeparatorMenuItem())
@@ -324,8 +365,12 @@ class CodexBarTray:
 
     def _codexbar_version(self):
         try:
-            out = subprocess.run([CODEXBAR, "--version"], capture_output=True, text=True, timeout=5)
-            return out.stdout.strip().splitlines()[-1] if out.stdout.strip() else "unknown"
+            out = subprocess.run(
+                [CODEXBAR, "--version"], capture_output=True, text=True, timeout=5
+            )
+            return (
+                out.stdout.strip().splitlines()[-1] if out.stdout.strip() else "unknown"
+            )
         except Exception:
             return "unknown"
 

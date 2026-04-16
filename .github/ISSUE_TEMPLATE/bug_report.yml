@@ -1,0 +1,55 @@
+name: Bug report
+description: Something is broken in the tray.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: A clear description of the bug and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+    validations:
+      required: true
+  - type: input
+    id: distro
+    attributes:
+      label: Distro and version
+      placeholder: Ubuntu 24.04
+    validations:
+      required: true
+  - type: input
+    id: desktop
+    attributes:
+      label: Desktop environment / session type
+      placeholder: GNOME 46, X11 (or Wayland)
+    validations:
+      required: true
+  - type: input
+    id: codexbar
+    attributes:
+      label: codexbar CLI version
+      description: Output of `codexbar --version`.
+    validations:
+      required: true
+  - type: input
+    id: tray
+    attributes:
+      label: codexbar-linux-tray version
+      placeholder: v0.1.1 or commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Service logs
+      description: Output of `journalctl --user -u codexbar-tray --no-pager -n 50`.
+      render: shell
+  - type: textarea
+    id: extras
+    attributes:
+      label: Anything else?

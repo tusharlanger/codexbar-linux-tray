@@ -43,7 +43,6 @@ install -m 755 "${SCRIPT_DIR}/codexbar-tray.py" "${BIN_DIR}/codexbar-tray.py"
 echo "[+] Installed ${BIN_DIR}/codexbar-tray.py"
 
 # 5. Choose launcher: systemd user service (preferred) or autostart .desktop
-if command -v systemctl >/dev/null 2>&1 && systemctl --user --quiet is-system-running 2>/dev/null; :; fi
 if command -v systemctl >/dev/null 2>&1; then
   UNIT_DIR="${HOME}/.config/systemd/user"
   mkdir -p "${UNIT_DIR}"

@@ -1,5 +1,11 @@
 # codexbar-linux-tray
 
+[![CI](https://github.com/tusharlanger/codexbar-linux-tray/actions/workflows/ci.yml/badge.svg)](https://github.com/tusharlanger/codexbar-linux-tray/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/tusharlanger/codexbar-linux-tray)](https://github.com/tusharlanger/codexbar-linux-tray/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Desktop: GNOME / AppIndicator](https://img.shields.io/badge/desktop-GNOME%20%2F%20AppIndicator-success)](https://github.com/ubuntu/gnome-shell-extension-appindicator)
+
 A tiny GNOME / Linux AppIndicator that puts your **Claude** and **Codex** usage right into the top bar — session %, weekly %, Sonnet sub-meter, monthly extras, reset countdowns, pace, and local cost (today / 30d).
 
 It's the menu-bar UX that [`steipete/CodexBar`](https://github.com/steipete/CodexBar) ships on macOS, brought to Linux by reusing CodexBar's official Linux CLI binary as the data source.

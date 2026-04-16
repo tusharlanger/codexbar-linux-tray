@@ -1,0 +1,33 @@
+name: Feature request
+description: Suggest an enhancement.
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem are you trying to solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: How should the tray behave? Mock-ups or sample dropdown text are great.
+    validations:
+      required: true
+  - type: input
+    id: data
+    attributes:
+      label: Where does the data come from?
+      description: Which `codexbar` subcommand / JSON field provides it? If unavailable upstream, this likely belongs as an issue on steipete/CodexBar instead.
+    validations:
+      required: true
+  - type: input
+    id: desktop
+    attributes:
+      label: Desktop environment scope
+      placeholder: GNOME / KDE / Hyprland / all
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
