@@ -29,11 +29,30 @@ def run_json(args):
         out = subprocess.run(
             [CODEXBAR, *args], capture_output=True, text=True, timeout=15
         )
+        data = None
+        for line in out.stdout.splitlines():
+            line = line.strip()
+            if not line:
+                continue
+            try:
+                parsed = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if isinstance(parsed, list):
+                parsed = parsed[0] if parsed else None
+            if parsed is not None:
+                data = parsed
+                break
         if out.returncode != 0:
-            return {"_error": out.stderr.strip() or f"exit {out.returncode}"}
-        data = json.loads(out.stdout)
-        if isinstance(data, list):
-            return data[0] if data else {"_error": "empty"}
+            msg = None
+            if isinstance(data, dict):
+                err = data.get("error")
+                if isinstance(err, dict):
+                    msg = err.get("message")
+                msg = msg or data.get("_error")
+            return {"_error": msg or out.stderr.strip() or f"exit {out.returncode}"}
+        if data is None:
+            return {"_error": "empty"}
         return data
     except Exception as e:
         return {"_error": str(e)}
@@ -245,8 +264,15 @@ class CodexBarTray:
         )
 
         if usage_err:
+            low = usage_err.lower()
+            if "429" in usage_err or "rate limit" in low or "rate_limit" in low:
+                label = "rate limited — retrying"
+                color = "#f59e0b"
+            else:
+                label = f"usage error: {usage_err[:60]}"
+                color = "#ef4444"
             self._add_markup(
-                f"<span foreground='#ef4444'>  usage error: {esc(usage_err[:60])}</span>"
+                f"<span foreground='{color}'>  {esc(label)}</span>"
             )
         else:
             sp = primary.get("usedPercent") or 0
