@@ -10,33 +10,9 @@ It's the menu-bar UX that [`steipete/CodexBar`](https://github.com/steipete/Code
 
 ## Screenshot
 
-Top bar label: `S<sessionPct>%` (icon turns yellow at 60%, red at 85%).
+<img src="screenshot.png" alt="codexbar-linux-tray dropdown in GNOME top bar" width="420" />
 
-Click for the dropdown — equivalent fields to the macOS app's Claude card:
-
-```
-Claude · Max
-⏱ Session   ▰▰▰▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱   16%
-      ↻ 5h 30m left  ·  Pace: Behind (-12%) · Lasts to reset
-📅 Weekly    ▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱    2%
-      ↻ 6d 18h left  ·  Pace: On pace (-1%) · Lasts to reset
-✦ Sonnet    ▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱▱    0%
-💳 Extra (Monthly)   ▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰▰  107%
-      $26.81 / $25.00
-
-Cost · local logs
-Claude   today $28.20  · 28M
-         30d  $261.90  · 266M
-Codex    today —       · —
-         30d  —        · —
-
-Updated 01:38:16
-Refresh now
-Usage Dashboard          → opens claude.ai/settings/usage
-Status Page              → opens status.anthropic.com
-CodexBar tray · CodexBar
-Quit
-```
+Top bar label: `S<sessionPct>%` (icon turns yellow at 60%, red at 85%). Click to open the dropdown — equivalent fields to the macOS app's Claude card.
 
 ## Why?
 
