@@ -1,0 +1,12 @@
+[Unit]
+Description=CodexBar Linux tray (GNOME AppIndicator for Claude / Codex usage)
+After=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/codexbar-tray.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=graphical-session.target

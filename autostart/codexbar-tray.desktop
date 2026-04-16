@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=CodexBar Tray
+Comment=Claude / Codex usage in the GNOME top bar
+Exec=python3 %h/.local/bin/codexbar-tray.py
+Icon=utilities-system-monitor-symbolic
+Terminal=false
+X-GNOME-Autostart-enabled=true
+StartupNotify=false
